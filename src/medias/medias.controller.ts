@@ -1,38 +1,45 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, Put, ConflictException, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { MediasService } from './medias.service';
 import { CreateMediaDto } from './dto/create-media.dto';
 
 @Controller('medias')
 export class MediasController {
-  constructor(private readonly mediasService: MediasService) {}
+  constructor(private readonly mediasService: MediasService) { }
 
   @Post()
-  @HttpCode(HttpStatus.OK)
   async create(@Body() createMediaDto: CreateMediaDto) {
-    return await this.mediasService.create(createMediaDto);
+    try {
+      return await this.mediasService.create(createMediaDto);
+    } catch (error) {
+      throw new ConflictException
+    }
   }
 
   @Get()
-  @HttpCode(HttpStatus.OK)
   findAll() {
     return this.mediasService.findAll();
   }
 
   @Get(':id')
-  @HttpCode(HttpStatus.OK)
   async findOne(@Param('id') id: string) {
     return await this.mediasService.findOne(+id);
   }
 
-  @Put('/medias/:id')
-  @HttpCode(HttpStatus.OK)
+  @Put(':id')
   async update(@Param('id') id: string, @Body() CreateMediaDto: CreateMediaDto) {
-    return await this.mediasService.update(CreateMediaDto, Number(id));
+    return await this.mediasService.update(CreateMediaDto, (+id));
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.OK)
   remove(@Param('id') id: string) {
-    return this.mediasService.remove(+id);
+    try {
+      return this.mediasService.remove(+id);
+    } catch (error) {
+      if (error.message === 'NOT FOUND') {
+        throw new NotFoundException
+      } else {
+        throw new ForbiddenException
+      }
+    }
   }
 }

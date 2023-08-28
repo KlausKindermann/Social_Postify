@@ -7,31 +7,36 @@ import { CreatePostDto } from './dto/create-post.dto';
 export class PostRepository {
   constructor(private prisma: PrismaService) { }
 
-  async create(post: CreatePostDto) {
-    return await this.prisma.posts.create({ data: post });
+  create(post: CreatePostDto) {
+    return this.prisma.posts.create({ data: post });
   }
 
-  async findAll() {
-    return await this.prisma.posts.findMany();
+  findAll() {
+    return this.prisma.posts.findMany();
   }
 
-  async findOne(id: number) {
-    return await this.prisma.posts.findUnique({ where: { id } });
+  findOne(id: number) {
+    return this.prisma.posts.findUnique({ where: { id } });
   }
 
-  async remove(id: number) {
-    return await this.prisma.posts.delete({ where: { id } });
+  remove(id: number) {
+    return this.prisma.posts.delete({ where: { id } });
   }
 
-  async update(id: number, post: CreatePostDto) {
-   /* return await this.prisma.posts.upsert({
+  update(id: number, createPostDto: CreatePostDto) {
+    return this.prisma.posts.upsert({
       where: {
         id,
       },
       update: {
-        text: post.text,
+        text: createPostDto.text,
       },
-    });*/
+      create: createPostDto
+    });
+  }
+
+  findPublicationById(id: number) {
+    return this.prisma.publications.findFirst({ where: { postId: id } });
   }
 }
 

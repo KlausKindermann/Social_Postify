@@ -1,28 +1,53 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, NotFoundException, Put, HttpCode, HttpStatus } from '@nestjs/common';
 import { PublicationsService } from './publications.service';
 import { CreatePublicationDto } from './dto/create-publication.dto';
 
 @Controller('publications')
 export class PublicationsController {
-  constructor(private readonly publicationsService: PublicationsService) {}
+  constructor(private readonly publicationsService: PublicationsService) { }
 
   @Post()
-  create(@Body() createPublicationDto: CreatePublicationDto) {
-    return this.publicationsService.create(createPublicationDto);
+  async create(@Body() createPublicationDto: CreatePublicationDto) {
+    try {
+      return await this.publicationsService.create(createPublicationDto);
+    } catch (error) {
+      throw new NotFoundException('NOT FOUND');
+    }
   }
 
   @Get()
-  findAll() {
-    return this.publicationsService.findAll();
+  async findAll() {
+    return await this.publicationsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.publicationsService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    try {
+      return await this.publicationsService.findOne(+id);
+    } catch (error) {
+      if (error.message === 'NOT FOUND') {
+        throw new NotFoundException('NOT FOUND');
+      }
+    }
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.publicationsService.remove(+id);
+  async remove(@Param('id') id: string) {
+    try {
+      return await this.publicationsService.remove(+id);
+    } catch (error) {
+      if (error.message === 'NOT FOUND') {
+        throw new NotFoundException('NOT FOUND');
+      }
+    }
+  }
+
+  @Put('/posts/:id')
+  async update(@Param('id') id: string, @Body() createPublicationDto: CreatePublicationDto) {
+    try {
+      return await this.publicationsService.update(createPublicationDto, Number(id));
+    } catch (error) {
+      throw new NotFoundException;
+    }
   }
 }

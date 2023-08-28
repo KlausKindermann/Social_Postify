@@ -8,7 +8,7 @@ export class PostsService {
 
 
   async create(post: CreatePostDto) {
-    return  await this.postRepository.create(post);
+    return await this.postRepository.create(post);
   }
 
   async findAll() {
@@ -21,33 +21,37 @@ export class PostsService {
   }
 
   async findOne(id: number) {
-    const media = this.postRepository.findOne(id);
+    const media = await this.postRepository.findOne(id);
     if (!media) {
-      throw new NotFoundException
+      throw new NotFoundException('NOT FOUND');
     } else {
       return media;
     }
   }
 
-  remove(id: number) {
-    //const exists = this.postRepository.getPublicationByPostId(id);
-    //if (exists) {
+  async remove(id: number) {
+    const exists = await this.postRepository.findPublicationById(id);
+    if (exists) {
       const del = this.postRepository.remove(id);
       if (del) {
         return del;
       } else {
         throw new NotFoundException('NOT FOUND');
       }
-    //} else {
-      //throw new ForbiddenException
-   // }
- // }
+    } else {
+      throw new ForbiddenException('FORBIDDEN');
+    }
   }
 
-  update(post: CreatePostDto, id: number) {
-    const update = this.postRepository.update(id, post);
-    if (update) {
-      return update;
+  async update(post: CreatePostDto, id: number) {
+    const exists = await this.postRepository.findOne(id);
+    if (exists) {
+      const update = this.postRepository.update(id, post);
+      if (update) {
+        return update;
+      } else {
+        throw new NotFoundException('NOT FOUND');
+      }
     } else {
       throw new NotFoundException('NOT FOUND');
     }

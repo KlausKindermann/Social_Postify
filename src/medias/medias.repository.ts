@@ -25,18 +25,19 @@ export class MediasRepository {
   }
 
   update(body: CreateMediaDto, id: number) {
-    /*return this.prisma.media.upsert({
+    return this.prisma.media.upsert({
       where: { id },
       update: {
-        username: media.username,
+        username: body.username,
       },
-  })*/
-}
+      create: body
+    })
+  }
 
-remove(id: number) {
-  return this.prisma.media.delete({
-    where: { id }
-  });
-}
+  remove(id: number) {
+    return this.prisma.media.delete({
+      where: { id }
+    });
+  }
 
 }
