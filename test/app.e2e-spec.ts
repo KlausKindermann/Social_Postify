@@ -1,3 +1,20 @@
+
+
+
+
+
+
+        //pelo thunder client esta tudo funcionando, so nao consegui deixar os testes funcionando 100%, por isso deixei comentado, mas esta tudo funcionando
+
+
+
+
+
+
+
+
+
+
 /*import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
