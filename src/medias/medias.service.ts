@@ -9,8 +9,8 @@ export class MediasService {
   }
 
   async create(body: CreateMediaDto) {
-    const { tittle, username } = body;
-    if (!tittle || !username) throw new BadRequestException;
+    const { title, username } = body;
+    if (!title || !username) throw new BadRequestException;
     return await this.repository.create(body);
   }
 

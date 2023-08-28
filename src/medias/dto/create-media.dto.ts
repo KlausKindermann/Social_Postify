@@ -5,7 +5,7 @@ export class CreateMediaDto {
   @IsNotEmpty({
     message: 'All fields are required!',
   })
-  tittle: string;
+  title: string;
 
   @IsString()
   @IsNotEmpty({

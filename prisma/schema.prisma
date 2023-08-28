@@ -12,7 +12,7 @@ datasource db {
 
 model Media {
   id       Int    @id @default(autoincrement())
-  tittle   String
+  title   String
   username String
 
   @@map("medias")
