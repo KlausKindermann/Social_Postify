@@ -44,14 +44,9 @@ export class PostsService {
   }
 
   async update(post: CreatePostDto, id: number) {
-    const exists = await this.postRepository.findOne(id);
-    if (exists) {
-      const update = this.postRepository.update(id, post);
-      if (update) {
-        return update;
-      } else {
-        throw new NotFoundException('NOT FOUND');
-      }
+    const update = this.postRepository.update(id, post);
+    if (update) {
+      return update;
     } else {
       throw new NotFoundException('NOT FOUND');
     }

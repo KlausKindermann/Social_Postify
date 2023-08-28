@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, Put, ConflictException, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, Put, ConflictException, NotFoundException, ForbiddenException, HttpException } from '@nestjs/common';
 import { MediasService } from './medias.service';
 import { CreateMediaDto } from './dto/create-media.dto';
 
@@ -36,9 +36,9 @@ export class MediasController {
       return this.mediasService.remove(+id);
     } catch (error) {
       if (error.message === 'NOT FOUND') {
-        throw new NotFoundException
+        throw new HttpException('NOT FOUND', HttpStatus.NOT_FOUND);
       } else {
-        throw new ForbiddenException
+        throw new HttpException('FORBIDDEN', HttpStatus.FORBIDDEN);
       }
     }
   }

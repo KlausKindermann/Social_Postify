@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, Put, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, Put, NotFoundException, BadRequestException, ForbiddenException, HttpException } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 
@@ -44,7 +44,7 @@ export class PostsController {
     try {
       return this.postsService.update(body, Number(id));
     } catch (error) {
-      throw new NotFoundException;
+      throw new HttpException('NOT FOUND', HttpStatus.NOT_FOUND);
     }
   }
 }
