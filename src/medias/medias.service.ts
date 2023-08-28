@@ -1,26 +1,41 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMediaDto } from './dto/create-media.dto';
 import { UpdateMediaDto } from './dto/update-media.dto';
+import { MediasRepository } from './medias.repository';
 
 @Injectable()
 export class MediasService {
-  create(createMediaDto: CreateMediaDto) {
-    return 'This action adds a new media';
+  constructor(private readonly repository: MediasRepository) {
   }
 
-  findAll() {
-    return `This action returns all medias`;
+  async create(body: CreateMediaDto) {
+    const { tittle, username } = body;
+    if (!tittle || !username) throw new BadRequestException;
+    return await this.repository.create(body);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} media`;
+  async findAll() {
+    const medias = await this.repository.findAll()
+    if (!medias) {
+      return []
+    } else {
+      return medias;
+    }
+  }
+
+  async findOne(id: number) {
+    const mediaId = await this.repository.findOne(id);
+    if (!mediaId) throw new NotFoundException;
+    return mediaId;
   }
 
   update(id: number, updateMediaDto: UpdateMediaDto) {
     return `This action updates a #${id} media`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} media`;
+  async remove(id: number) {
+    const mediaId = await this.repository.remove(id);
+    if (!mediaId) throw new NotFoundException;
+    return mediaId;
   }
 }
