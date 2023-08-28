@@ -5,17 +5,33 @@ import { CreatePostDto } from './dto/create-post.dto';
 
 @Injectable()
 export class PostRepository {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async create(post: CreatePostDto) {
     return await this.prisma.posts.create({ data: post });
   }
 
-  findAll() {
-    return this.prisma.posts.findMany();
+  async findAll() {
+    return await this.prisma.posts.findMany();
   }
 
-  async getPostById(id: number) {
+  async findOne(id: number) {
     return await this.prisma.posts.findUnique({ where: { id } });
   }
+
+  async remove(id: number) {
+    return await this.prisma.posts.delete({ where: { id } });
+  }
+
+  async update(id: number, post: CreatePostDto) {
+   /* return await this.prisma.posts.upsert({
+      where: {
+        id,
+      },
+      update: {
+        text: post.text,
+      },
+    });*/
+  }
 }
+
