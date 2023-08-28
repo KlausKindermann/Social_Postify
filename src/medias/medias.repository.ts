@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { CreateMediaDto } from './dto/create-media.dto';
-import { UpdateMediaDto } from './dto/update-media.dto';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -25,14 +24,19 @@ export class MediasRepository {
     });
   }
 
-  update(id: number, updateMediaDto: UpdateMediaDto) {
-    return `This action updates a #${id} media`;
-  }
+  update(body: CreateMediaDto, id: number) {
+    /*return this.prisma.media.upsert({
+      where: { id },
+      update: {
+        username: media.username,
+      },
+  })*/
+}
 
-  remove(id: number) {
-    return this.prisma.media.delete({
-      where: { id }
-    });
-  }
+remove(id: number) {
+  return this.prisma.media.delete({
+    where: { id }
+  });
+}
 
 }

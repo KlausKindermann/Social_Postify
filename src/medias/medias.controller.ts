@@ -1,7 +1,6 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, Put } from '@nestjs/common';
 import { MediasService } from './medias.service';
 import { CreateMediaDto } from './dto/create-media.dto';
-import { UpdateMediaDto } from './dto/update-media.dto';
 
 @Controller('medias')
 export class MediasController {
@@ -25,10 +24,10 @@ export class MediasController {
     return await this.mediasService.findOne(+id);
   }
 
-  @Patch(':id')
+  @Put('/medias/:id')
   @HttpCode(HttpStatus.OK)
-  update(@Param('id') id: string, @Body() updateMediaDto: UpdateMediaDto) {
-    return this.mediasService.update(+id, updateMediaDto);
+  async update(@Param('id') id: string, @Body() CreateMediaDto: CreateMediaDto) {
+    return await this.mediasService.update(CreateMediaDto, Number(id));
   }
 
   @Delete(':id')

@@ -1,6 +1,5 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMediaDto } from './dto/create-media.dto';
-import { UpdateMediaDto } from './dto/update-media.dto';
 import { MediasRepository } from './medias.repository';
 
 @Injectable()
@@ -29,8 +28,17 @@ export class MediasService {
     return mediaId;
   }
 
-  update(id: number, updateMediaDto: UpdateMediaDto) {
-    return `This action updates a #${id} media`;
+  async update(body: CreateMediaDto, id: number) {
+    if (body.title === body.username) {
+      throw new ConflictException('CONFLICT');
+    } else {
+      const midia = this.repository.findOne(id);
+      if (midia) {
+        return this.repository.update(body, id);
+      } else {
+        throw new NotFoundException;
+      }
+    }
   }
 
   async remove(id: number) {
