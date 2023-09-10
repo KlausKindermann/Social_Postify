@@ -1,54 +1,37 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
-import { PostRepository } from './posts.repository';
+import { UpdatePostDto } from './dto/update-post.dto';
+import { PostsRepository } from './posts.repository';
 
 @Injectable()
 export class PostsService {
-  constructor(private postRepository: PostRepository) { }
+  constructor(private readonly repository: PostsRepository) { }
 
-
-  async create(post: CreatePostDto) {
-    return await this.postRepository.create(post);
+  async create(createPostDto: CreatePostDto) {
+    return this.repository.create(createPostDto);
   }
 
   async findAll() {
-    const posts = await this.postRepository.findAll();
-    if (posts) {
-      return posts;
-    } else {
-      return [];
-    }
+    return this.repository.findAll();
   }
 
   async findOne(id: number) {
-    const media = await this.postRepository.findOne(id);
-    if (!media) {
-      throw new NotFoundException('NOT FOUND');
-    } else {
-      return media;
-    }
+    const post = await this.repository.findOne(id);
+    if (!post) throw new HttpException(`Post not found`, HttpStatus.NOT_FOUND);
+
+    return post;
+  }
+
+  async update(id: number, updatePostDto: UpdatePostDto) {
+    await this.findOne(id);
+    return this.repository.update(id, updatePostDto);
   }
 
   async remove(id: number) {
-    const exists = await this.postRepository.findPublicationById(id);
-    if (exists) {
-      const del = this.postRepository.remove(id);
-      if (del) {
-        return del;
-      } else {
-        throw new NotFoundException('NOT FOUND');
-      }
-    } else {
-      throw new ForbiddenException('FORBIDDEN');
-    }
-  }
+    const post = await this.repository.findOneWithPublications(id);
+    if (!post) throw new HttpException(`Post not found`, HttpStatus.NOT_FOUND);
+    if (post.Publication.length > 0) throw new HttpException(`Cannot delete post in use`, HttpStatus.FORBIDDEN);
 
-  async update(post: CreatePostDto, id: number) {
-    const update = this.postRepository.update(id, post);
-    if (update) {
-      return update;
-    } else {
-      throw new NotFoundException('NOT FOUND');
-    }
+    return this.repository.remove(id);
   }
 }

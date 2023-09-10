@@ -1,42 +1,47 @@
-
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
 import { CreatePostDto } from './dto/create-post.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
-export class PostRepository {
-  constructor(private prisma: PrismaService) { }
+export class PostsRepository {
+  constructor(private readonly prisma: PrismaService) { }
 
-  create(post: CreatePostDto) {
-    return this.prisma.posts.create({ data: post });
-  }
-
-  findAll() {
-    return this.prisma.posts.findMany();
-  }
-
-  findOne(id: number) {
-    return this.prisma.posts.findUnique({ where: { id } });
-  }
-
-  remove(id: number) {
-    return this.prisma.posts.delete({ where: { id } });
-  }
-
-  update(id: number, createPostDto: CreatePostDto) {
-    return this.prisma.posts.upsert({
-      where: {
-        id,
-      },
-      update: {
-        text: createPostDto.text,
-      },
-      create: createPostDto
+  create(createPostDto: CreatePostDto) {
+    return this.prisma.post.create({
+      data: createPostDto,
     });
   }
 
-  findPublicationById(id: number) {
-    return this.prisma.publications.findFirst({ where: { postId: id } });
+  findAll() {
+    return this.prisma.post.findMany();
+  }
+
+  findOne(id: number) {
+    return this.prisma.post.findUnique({
+      where: { id },
+    });
+  }
+
+  findOneWithPublications(id: number) {
+    return this.prisma.post.findUnique({
+      where: { id },
+      include: {
+        Publication: true
+      }
+    })
+  }
+
+  update(id: number, updatePostDto: UpdatePostDto) {
+    return this.prisma.post.update({
+      where: { id },
+      data: updatePostDto,
+    });
+  }
+
+  remove(id: number) {
+    return this.prisma.post.delete({
+      where: { id },
+    });
   }
 }
-

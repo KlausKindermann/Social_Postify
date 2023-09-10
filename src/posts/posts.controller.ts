@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, Put, NotFoundException, BadRequestException, ForbiddenException, HttpException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -8,11 +9,7 @@ export class PostsController {
 
   @Post()
   async create(@Body() createPostDto: CreatePostDto) {
-    try {
-      return await this.postsService.create(createPostDto);
-    } catch (error) {
-      throw new BadRequestException
-    }
+    return await this.postsService.create(createPostDto);
   }
 
   @Get()
@@ -25,26 +22,13 @@ export class PostsController {
     return await this.postsService.findOne(+id);
   }
 
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    try {
-      return await this.postsService.remove(+id);
-    } catch (error) {
-      if (error.message === 'NOT FOUND') {
-        throw new NotFoundException
-      }
-      if (error.message === 'FORBIDDEN') {
-        throw new ForbiddenException
-      }
-    }
+  @Put(':id')
+  async update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
+    return await this.postsService.update(+id, updatePostDto);
   }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() body: CreatePostDto) {
-    try {
-      return this.postsService.update(body, Number(id));
-    } catch (error) {
-      throw new HttpException('NOT FOUND', HttpStatus.NOT_FOUND);
-    }
+  @Delete(':id')
+  async remove(@Param('id') id: string) {
+    return await this.postsService.remove(+id);
   }
 }
