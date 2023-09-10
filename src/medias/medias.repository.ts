@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { CreateMediaDto } from './dto/create-media.dto';
+import { UpdateMediaDto } from './dto/update-media.dto';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class MediasRepository {
 
-  constructor(private readonly prisma: PrismaService) {
-  }
+  constructor(private readonly prisma: PrismaService) { }
 
-  create(body: CreateMediaDto) {
+  create(createMediaDto: CreateMediaDto) {
     return this.prisma.media.create({
-      data: body
+      data: createMediaDto
     })
   }
 
@@ -19,25 +19,41 @@ export class MediasRepository {
   }
 
   findOne(id: number) {
-    return this.prisma.media.findFirst({
+    return this.prisma.media.findUnique({
       where: { id }
-    });
+    })
   }
 
-  update(body: CreateMediaDto, id: number) {
-    return this.prisma.media.upsert({
+  findByTitleAndUsername(title: string, username: string) {
+    return this.prisma.media.findUnique({
+      where: {
+        title_username: {
+          title,
+          username
+        }
+      }
+    })
+  }
+
+  findOneWithPublications(id: number) {
+    return this.prisma.media.findUnique({
       where: { id },
-      update: {
-        username: body.username,
-      },
-      create: body
+      include: {
+        Publication: true // join
+      }
+    })
+  }
+
+  update(id: number, updateMediaDto: UpdateMediaDto) {
+    return this.prisma.media.update({
+      where: { id },
+      data: updateMediaDto
     })
   }
 
   remove(id: number) {
     return this.prisma.media.delete({
       where: { id }
-    });
+    })
   }
-
 }
