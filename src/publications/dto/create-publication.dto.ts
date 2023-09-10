@@ -1,17 +1,20 @@
-import { IsNumber, IsDate, IsNotEmpty } from 'class-validator';
+import { IsDateString, IsPositive } from "class-validator";
 
 export class CreatePublicationDto {
-  @IsNumber()
-  id?: number;
 
-  @IsNotEmpty()
-  @IsNumber()
+  @IsPositive()
+  //@IsInt
   mediaId: number;
 
-  @IsNotEmpty()
-  @IsNumber()
+  @IsPositive()
+  //@IsInt
   postId: number;
 
-  @IsDate()
-  date?: Date;
+  @IsDateString()
+  date: string;
+
+  constructor(params?: Partial<CreatePublicationDto>) {
+    Object.assign(this, params);
+  }
+
 }

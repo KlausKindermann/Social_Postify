@@ -1,53 +1,48 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, NotFoundException, Put, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseBoolPipe, Put } from '@nestjs/common';
 import { PublicationsService } from './publications.service';
 import { CreatePublicationDto } from './dto/create-publication.dto';
+import { UpdatePublicationDto } from './dto/update-publication.dto';
+import { ParseDatePipe } from './pipes/dates.pipe';
 
 @Controller('publications')
 export class PublicationsController {
   constructor(private readonly publicationsService: PublicationsService) { }
 
   @Post()
-  async create(@Body() createPublicationDto: CreatePublicationDto) {
-    try {
-      return await this.publicationsService.create(createPublicationDto);
-    } catch (error) {
-      throw new NotFoundException('NOT FOUND');
-    }
+  create(@Body() createPublicationDto: CreatePublicationDto) {
+    return this.publicationsService.create(createPublicationDto);
   }
 
   @Get()
-  async findAll() {
-    return await this.publicationsService.findAll();
+  findAll(
+    @Query("published", new ParseBoolPipe({ optional: true })) published: boolean,
+    @Query("after", new ParseDatePipe()) after: Date) {
+
+    // published
+    if (published !== undefined && !after) return this.publicationsService.findAllPublished(published);
+
+    // after
+    if (published === undefined && after) return this.publicationsService.findAllAfter(after);
+
+    // dois
+    if (published !== undefined && after) return this.publicationsService.filter(published, after);
+
+    // nenhum
+    return this.publicationsService.findAll();
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    try {
-      return await this.publicationsService.findOne(+id);
-    } catch (error) {
-      if (error.message === 'NOT FOUND') {
-        throw new NotFoundException('NOT FOUND');
-      }
-    }
+  findOne(@Param('id') id: string) {
+    return this.publicationsService.findOne(+id);
+  }
+
+  @Put(':id')
+  update(@Param('id') id: string, @Body() updatePublicationDto: UpdatePublicationDto) {
+    return this.publicationsService.update(+id, updatePublicationDto);
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    try {
-      return await this.publicationsService.remove(+id);
-    } catch (error) {
-      if (error.message === 'NOT FOUND') {
-        throw new NotFoundException('NOT FOUND');
-      }
-    }
-  }
-
-  @Put('/posts/:id')
-  async update(@Param('id') id: string, @Body() createPublicationDto: CreatePublicationDto) {
-    try {
-      return await this.publicationsService.update(createPublicationDto, Number(id));
-    } catch (error) {
-      throw new NotFoundException;
-    }
+  remove(@Param('id') id: string) {
+    return this.publicationsService.remove(+id);
   }
 }
