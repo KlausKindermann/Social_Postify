@@ -4,7 +4,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { PostsService } from './posts.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-@ApiTags('Medias')
+@ApiTags('Posts')
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) { }
