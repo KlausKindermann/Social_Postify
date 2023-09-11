@@ -3,11 +3,9 @@ import { IsDateString, IsPositive } from "class-validator";
 export class CreatePublicationDto {
 
   @IsPositive()
-  //@IsInt
   mediaId: number;
 
   @IsPositive()
-  //@IsInt
   postId: number;
 
   @IsDateString()

@@ -18,16 +18,10 @@ export class PublicationsController {
     @Query("published", new ParseBoolPipe({ optional: true })) published: boolean,
     @Query("after", new ParseDatePipe()) after: Date) {
 
-    // published
     if (published !== undefined && !after) return this.publicationsService.findAllPublished(published);
-
-    // after
     if (published === undefined && after) return this.publicationsService.findAllAfter(after);
-
-    // dois
     if (published !== undefined && after) return this.publicationsService.filter(published, after);
 
-    // nenhum
     return this.publicationsService.findAll();
   }
 

@@ -39,7 +39,7 @@ export class MediasRepository {
     return this.prisma.media.findUnique({
       where: { id },
       include: {
-        Publication: true // join
+        Publication: true
       }
     })
   }
